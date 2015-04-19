@@ -4,8 +4,11 @@ library(GOexpress)
 # Load ExpressionSet
 exprSet = readRDS(file = "data/MDM.eSet.rds")
 
-# below is deprecated since I load the results above: UPDATE BELOW
-# Instead of the entire GOexpress result and annotations:
+# Extract the Probeset identifiers
+probeset_ids = sort(rownames(exprSet))
+# SAA3
+default_probesetId = 'Bt.278.1.S1_at'
+
 # Load the gene name annotations 
 gene_names = readRDS(file = "data/external_gene_names.rds")
 genes_choices <- sort(unique(gene_names))
@@ -28,6 +31,11 @@ infection_selected = as.character(unlist(infection_choices))
 # maximum filter value allowed for minimal count of total annotated
 # genes
 max.GO.total = 1E3
+# GO namespaces
+GO_namespaces = list(
+    'Biological process'='biological_process',
+    'Molecular function'='molecular_function',
+    'Cellular component'='cellular_component')
 
 shinyUI(fluidPage(
     
@@ -39,8 +47,8 @@ shinyUI(fluidPage(
         "Genes",
         
         tabPanel(
-            "Expression profiles",
-            h3("Expression profiles"),
+            "Expression profiles (Gene name)",
+            h3("Expression profiles by gene name"),
             sidebarLayout(
                 sidebarPanel(
                     selectInput(
@@ -50,20 +58,20 @@ shinyUI(fluidPage(
                         selected = default_gene),
                     
                     checkboxGroupInput(
-                        inputId = "animals",
+                        inputId = "animals_symbol",
                         label = "Animal IDs:",
                         choices = animals_choices,
                         selected = animals_choices,
                         inline = TRUE),
                     
                     checkboxGroupInput(
-                        inputId = "infection",
+                        inputId = "infection_symbol",
                         label = "Infection:",
                         choices = infection_choices,
                         selected = infection_selected),
                     
                     checkboxGroupInput(
-                        inputId = "hours",
+                        inputId = "hours_symbol",
                         label = "Hours post-infection:",
                         choices = hours_choices,
                         selected = hours_choices[-1],
@@ -85,6 +93,66 @@ shinyUI(fluidPage(
                         min = 0,
                         step = 1
                     )
+                    
+                ), # end of sidebarPanel
+                
+                mainPanel(
+                    tabsetPanel(
+                        type = 'pills',
+                        tabPanel(
+                            "Sample series",
+                            plotOutput(
+                                "exprProfilesSymbol",
+                                width = "100%", height = "600px"
+                            )
+                        ), 
+                        tabPanel(
+                            "Sample groups",
+                            plotOutput(
+                                "exprPlotSymbol",
+                                width = "100%", height = "600px"
+                            )
+                        )
+                        
+                    )
+                    
+                ) #  end of mainPanel
+                
+            ) # end of sidebarLayout
+            
+            
+        ), # end of tabPanel
+        
+        tabPanel(
+            "Expression profiles (Ensembl ID)",
+            h3("Expression profiles by Ensembl gene identifier"),
+            sidebarLayout(
+                sidebarPanel(
+                    selectInput(
+                        inputId = "probeset",
+                        label = "Probeset identifier:",
+                        choices = probeset_ids,
+                        selected = default_probesetId),
+                    
+                    checkboxGroupInput(
+                        inputId = "animals",
+                        label = "Animal IDs:",
+                        choices = animals_choices,
+                        selected = animals_choices,
+                        inline = TRUE),
+                    
+                    checkboxGroupInput(
+                        inputId = "infection",
+                        label = "Infection:",
+                        choices = infection_choices,
+                        selected = infection_selected),
+                    
+                    checkboxGroupInput(
+                        inputId = "hours",
+                        label = "Hours post-infection:",
+                        choices = hours_choices,
+                        selected = hours_choices[-1],
+                        inline = TRUE)
                     
                 ), # end of sidebarPanel
                 
@@ -196,6 +264,15 @@ shinyUI(fluidPage(
                            max = 1,
                            value = 0.05,
                            step = 0.001
+                       )
+                ),
+                column(width = 2,
+                       selectInput(
+                           inputId = "namespace",
+                           label = "Namespace:",
+                           choices = GO_namespaces,
+                           selevcted=GO_namespaces,
+                           multiple = TRUE
                        )
                 )
             ),
