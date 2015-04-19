@@ -230,6 +230,24 @@ shinyUI(fluidPage(
                         max = 2,
                         value = 0.8,
                         step = 0.1
+                    ),
+                    
+                    sliderInput(
+                        inputId = "margins.heatmap.bottom",
+                        label = "Bottom margin:",
+                        min = 3,
+                        max = 30,
+                        value = 7,
+                        step = 1
+                    ),
+                    
+                    sliderInput(
+                        inputId = "margins.heatmap.right",
+                        label = "Right margin:",
+                        min = 3,
+                        max = 30,
+                        value = 5,
+                        step = 1
                     )
                     
                     
