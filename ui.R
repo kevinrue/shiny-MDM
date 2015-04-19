@@ -271,7 +271,7 @@ shinyUI(fluidPage(
                            inputId = "namespace",
                            label = "Namespace:",
                            choices = GO_namespaces,
-                           selected=GO_namespaces,
+                           selected = GO_namespaces,
                            multiple = TRUE
                        )
                 )
