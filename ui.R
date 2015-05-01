@@ -21,6 +21,7 @@ default_go = 'GO:0008009' # chemokine activity
 animals_choices <- sort(unique(as.character(exprSet$Animal_ID)))
 # Prepare the individual time-points choices
 hours_choices <- levels(exprSet$Time)
+hours_heatmap <- hours_choices[3:4]
 # Prepare the individual infection choices
 infection_choices = list(
     'Control'='CN',
@@ -207,7 +208,7 @@ shinyUI(fluidPage(
                         inputId = "hours.GO",
                         label = "Hours post-infection:",
                         choices = hours_choices,
-                        selected = hours_choices,
+                        selected = hours_heatmap,
                         inline = TRUE),
                     
                     checkboxGroupInput(
